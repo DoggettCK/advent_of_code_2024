@@ -66,11 +66,11 @@ defmodule Mix.Tasks.Advent.Generate.Day do
 
     igniter
     |> Igniter.Project.Module.create_module(day_module_name, """
-    def part1(args) do
+    def part1(_args) do
 
     end
 
-    def part2(args) do
+    def part2(_args) do
 
     end
     """)
