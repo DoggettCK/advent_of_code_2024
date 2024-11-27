@@ -54,47 +54,51 @@ defmodule Mix.Tasks.Advent.Generate.Day do
     # Do your work here and return an updated igniter
     {arguments, _argv} = positional_args!(argv)
 
-    day = arguments
-          |> Map.get(:day)
-          |> advent_day()
-          |> to_string()
-          |> String.pad_leading(2, "0")
+    day =
+      arguments
+      |> Map.get(:day)
+      |> advent_day()
+      |> to_string()
+      |> String.pad_leading(2, "0")
 
-    day_module_name = Igniter.Code.Module.parse("AdventOfCode2024.Day#{day}")
-    test_module_name = Igniter.Code.Module.parse("AdventOfCode2024.Day#{day}Test")
+    day_module_name = Igniter.Project.Module.parse("Day#{day}")
+    test_module_name = Igniter.Project.Module.parse("Day#{day}Test")
 
     igniter
-    |> Igniter.Code.Module.create_module(day_module_name, """
-      def part1(args) do
+    |> Igniter.Project.Module.create_module(day_module_name, """
+    def part1(args) do
 
+    end
+
+    def part2(args) do
+
+    end
+    """)
+    |> Igniter.Project.Module.create_module(
+      test_module_name,
+      """
+      use ExUnit.Case
+
+      import #{day_module_name}
+
+      @tag :skip
+      test "part1" do
+        input = nil
+        result = part1(input)
+
+        assert result
       end
 
-      def part2(args) do
+      @tag :skip
+      test "part2" do
+        input = nil
+        result = part2(input)
 
+        assert result
       end
-      """)
-      |> Igniter.Code.Module.create_module(test_module_name, """
-        use ExUnit.Case
-
-        import #{day_module_name}
-
-        @tag :skip
-        test "part1" do
-          input = nil
-          result = part1(input)
-
-          assert result
-        end
-
-        @tag :skip
-        test "part2" do
-          input = nil
-          result = part2(input)
-
-          assert result
-        end
-        """,
-      path: Igniter.Code.Module.proper_test_location(test_module_name))
+      """,
+      location: :test
+    )
   end
 
   defp advent_day(day) when is_binary(day) do
