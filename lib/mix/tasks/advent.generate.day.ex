@@ -80,18 +80,42 @@ defmodule Mix.Tasks.Advent.Generate.Day do
       use ExUnit.Case
 
       import #{day_module_name}
+      import Test.Common
+
+      @example_input "test/input/day#{day}/example"
+      @real_input "test/input/day#{day}/real"
 
       @tag :skip
-      test "part1" do
-        input = nil
+      test "part1 example" do
+        input = @example_input
+                |> load_input()
         result = part1(input)
 
         assert result
       end
 
       @tag :skip
-      test "part2" do
-        input = nil
+      test "part1 real" do
+        input = @real_input
+                |> load_input()
+        result = part1(input)
+
+        assert result
+      end
+
+      @tag :skip
+      test "part2 example" do
+        input = @example_input
+                |> load_input()
+        result = part2(input)
+
+        assert result
+      end
+
+      @tag :skip
+      test "part2 real" do
+        input = @real_input
+                |> load_input()
         result = part2(input)
 
         assert result
