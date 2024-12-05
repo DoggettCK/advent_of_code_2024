@@ -37,10 +37,10 @@ defmodule Day02Test do
 
     result = part2(input)
 
-    assert result == 2
+    assert result == 4
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 real" do
     input =
       @real_input
@@ -48,6 +48,6 @@ defmodule Day02Test do
 
     result = part2(input)
 
-    assert result
+    assert result == 364
   end
 end
