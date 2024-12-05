@@ -91,7 +91,7 @@ defmodule Mix.Tasks.Advent.Generate.Day do
                 |> load_input()
         result = part1(input)
 
-        assert result
+        assert 0 == result
       end
 
       @tag :skip
@@ -100,7 +100,7 @@ defmodule Mix.Tasks.Advent.Generate.Day do
                 |> load_input()
         result = part1(input)
 
-        assert result
+        assert 0 == result
       end
 
       @tag :skip
@@ -109,7 +109,7 @@ defmodule Mix.Tasks.Advent.Generate.Day do
                 |> load_input()
         result = part2(input)
 
-        assert result
+        assert 0 == result
       end
 
       @tag :skip
@@ -118,7 +118,7 @@ defmodule Mix.Tasks.Advent.Generate.Day do
                 |> load_input()
         result = part2(input)
 
-        assert result
+        assert 0 == result
       end
       """,
       location: :test
