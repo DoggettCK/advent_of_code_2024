@@ -63,8 +63,12 @@ defmodule Mix.Tasks.Advent.Generate.Day do
 
     day_module_name = Igniter.Project.Module.parse("Day#{day}")
     test_module_name = Igniter.Project.Module.parse("Day#{day}Test")
+    example_input_file = "test/input/day#{day}/example"
+    real_input_file = "test/input/day#{day}/real"
 
     igniter
+    |> Igniter.create_new_file(example_input_file, "\n")
+    |> Igniter.create_new_file(real_input_file, "\n")
     |> Igniter.Project.Module.create_module(day_module_name, """
     def part1(_args) do
 
@@ -82,8 +86,8 @@ defmodule Mix.Tasks.Advent.Generate.Day do
       import #{day_module_name}
       import Test.Common
 
-      @example_input "test/input/day#{day}/example"
-      @real_input "test/input/day#{day}/real"
+      @example_input "#{example_input_file}"
+      @real_input "#{real_input_file}"
 
       @tag :skip
       test "part1 example" do
