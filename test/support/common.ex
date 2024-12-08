@@ -11,8 +11,9 @@ defmodule Test.Common do
     filename
     |> load_input()
     |> Enum.map(fn line ->
-      ~r/[^0-9]/
-      |> Regex.split(line)
+      ~r/\d+/
+      |> Regex.scan(line)
+      |> List.flatten()
       |> Enum.map(&String.to_integer/1)
     end)
   end
