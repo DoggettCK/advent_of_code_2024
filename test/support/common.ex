@@ -1,16 +1,18 @@
 defmodule Test.Common do
-  def load_input(filename) do
+  def load_input(filename, opts \\ []) do
+    trim = Keyword.get(opts, :trim, true)
+
     filename
     |> File.read!()
-    |> String.split("\n", trim: true)
+    |> String.split("\n", trim: trim)
   end
 
   def read_ints(filename) do
     filename
     |> load_input()
     |> Enum.map(fn line ->
-      line
-      |> String.split()
+      ~r/[^0-9]/
+      |> Regex.split(line)
       |> Enum.map(&String.to_integer/1)
     end)
   end
