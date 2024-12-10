@@ -4,11 +4,11 @@ defmodule Day06 do
   @cursors %{north: "^", east: ">", south: "V", west: "<"}
 
   def part1(args) do
-    grid = reject_from_grid(args, ".")
+    %{grid: grid, max_x: max_x, max_y: max_y} = args
+
+    grid = reject_from_grid(grid, ".")
 
     {guard_pos, guard_dir} = get_initial_guard_position(grid)
-    {max_x, grid} = Map.pop(grid, :max_x)
-    {max_y, grid} = Map.pop(grid, :max_y)
 
     %{
       grid: grid,
@@ -24,11 +24,11 @@ defmodule Day06 do
   end
 
   def part2(args) do
-    grid = reject_from_grid(args, ".")
+    %{grid: grid, max_x: max_x, max_y: max_y} = args
+
+    grid = reject_from_grid(grid, ".")
 
     {guard_pos, guard_dir} = get_initial_guard_position(grid)
-    {max_x, grid} = Map.pop(grid, :max_x)
-    {max_y, grid} = Map.pop(grid, :max_y)
 
     candidates =
       %{

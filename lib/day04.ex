@@ -1,19 +1,23 @@
 defmodule Day04 do
   import Common
 
-  def part1(grid) do
+  def part1(args) do
+    %{grid: grid, max_x: max_x} = args
+
     grid
     |> find_chars("X")
-    |> build_neighbor_lists(grid[:max_x], 4)
+    |> build_neighbor_lists(max_x, 4)
     |> build_words(grid)
     |> Enum.filter(&("XMAS" == &1))
     |> length()
   end
 
-  def part2(grid) do
+  def part2(args) do
+    %{grid: grid, max_x: max_x} = args
+
     grid
     |> find_chars("A")
-    |> build_crosses(grid[:max_x])
+    |> build_crosses(max_x)
     |> build_words(grid)
     |> Enum.filter(fn
       "MSAMS" -> true

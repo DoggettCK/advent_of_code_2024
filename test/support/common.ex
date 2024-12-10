@@ -38,6 +38,6 @@ defmodule Test.Common do
 
     {{max_x, max_y}, _} = Enum.max_by(grid, fn {coord, _} -> coord end)
 
-    %{grid | max_x: max_x, max_y: max_y}
+    %{grid: grid, max_x: max_x, max_y: max_y}
   end
 end
