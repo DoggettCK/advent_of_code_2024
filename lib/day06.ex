@@ -4,12 +4,7 @@ defmodule Day06 do
   @cursors %{north: "^", east: ">", south: "V", west: "<"}
 
   def part1(args) do
-    grid =
-      args
-      |> Map.reject(fn
-        {_, "."} -> true
-        _ -> false
-      end)
+    grid = reject_from_grid(args, ".")
 
     {guard_pos, guard_dir} = get_initial_guard_position(grid)
     {max_x, grid} = Map.pop(grid, :max_x)
@@ -24,23 +19,12 @@ defmodule Day06 do
     }
     |> simulate(&run_simulation/2)
     |> Map.get(:grid)
-    |> Map.filter(fn
-      {_, "^"} -> true
-      {_, ">"} -> true
-      {_, "V"} -> true
-      {_, "<"} -> true
-      _ -> false
-    end)
+    |> filter_from_grid(~w(^ > V <))
     |> map_size()
   end
 
   def part2(args) do
-    grid =
-      args
-      |> Map.reject(fn
-        {_, "."} -> true
-        _ -> false
-      end)
+    grid = reject_from_grid(args, ".")
 
     {guard_pos, guard_dir} = get_initial_guard_position(grid)
     {max_x, grid} = Map.pop(grid, :max_x)
@@ -56,13 +40,7 @@ defmodule Day06 do
       }
       |> simulate(&run_simulation/2)
       |> Map.get(:grid)
-      |> Map.filter(fn
-        {_, "^"} -> true
-        {_, ">"} -> true
-        {_, "V"} -> true
-        {_, "<"} -> true
-        _ -> false
-      end)
+      |> filter_from_grid(~w(^ > V <))
       |> Map.keys()
 
     candidates
@@ -85,10 +63,7 @@ defmodule Day06 do
   defp get_initial_guard_position(grid) do
     coords =
       grid
-      |> Map.filter(fn
-        {_, "^"} -> true
-        _ -> false
-      end)
+      |> filter_from_grid("^")
       |> Map.keys()
       |> hd()
 

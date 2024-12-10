@@ -41,4 +41,24 @@ defmodule Common do
     |> Stream.iterate(&(&1 + 1))
     |> Enum.reduce_while(initial_state, step_simulation)
   end
+
+  def reject_from_grid(grid, values_to_remove) when is_list(values_to_remove) do
+    Map.reject(grid, fn {_, v} -> v in values_to_remove end)
+  end
+
+  def reject_from_grid(grid, value_to_remove) do
+    value_to_remove
+    |> List.wrap()
+    |> then(&reject_from_grid(grid, &1))
+  end
+
+  def filter_from_grid(grid, values_to_keep) when is_list(values_to_keep) do
+    Map.filter(grid, fn {_, v} -> v in values_to_keep end)
+  end
+
+  def filter_from_grid(grid, value_to_keep) do
+    value_to_keep
+    |> List.wrap()
+    |> then(&filter_from_grid(grid, &1))
+  end
 end

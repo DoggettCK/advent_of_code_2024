@@ -1,4 +1,6 @@
 defmodule Day04 do
+  import Common
+
   def part1(grid) do
     grid
     |> find_chars("X")
@@ -25,10 +27,7 @@ defmodule Day04 do
 
   defp find_chars(grid, char) do
     grid
-    |> Map.filter(fn
-      {_coord, ^char} -> true
-      _ -> false
-    end)
+    |> filter_from_grid(char)
     |> Map.keys()
     |> Enum.sort()
   end
