@@ -27,7 +27,7 @@ defmodule Test.Common do
       filename
       |> load_input()
       |> Enum.with_index()
-      |> Enum.reduce(%{max_x: -1, max_y: -1}, fn {row, row_idx}, acc ->
+      |> Enum.reduce(%{}, fn {row, row_idx}, acc ->
         row
         |> String.split("", trim: true)
         |> Enum.with_index()
