@@ -11,7 +11,7 @@ defmodule Day03Test do
   test "part1 example" do
     input =
       @example_input
-      |> load_input()
+      |> read_lines()
 
     result = part1(input)
 
@@ -22,7 +22,7 @@ defmodule Day03Test do
   test "part1 real" do
     input =
       @real_input
-      |> load_input()
+      |> read_lines()
 
     result = part1(input)
 
@@ -33,7 +33,7 @@ defmodule Day03Test do
   test "part2 example" do
     input =
       @example_input
-      |> load_input()
+      |> read_lines()
 
     result = part2(input)
 
@@ -44,7 +44,7 @@ defmodule Day03Test do
   test "part2 real" do
     input =
       @real_input
-      |> load_input()
+      |> read_lines()
 
     result = part2(input)
 

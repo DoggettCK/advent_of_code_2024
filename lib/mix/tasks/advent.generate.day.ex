@@ -92,7 +92,7 @@ defmodule Mix.Tasks.Advent.Generate.Day do
       @tag :skip
       test "part1 example" do
         input = @example_input
-                |> load_input()
+                |> read_lines()
         result = part1(input)
 
         assert 0 == result
@@ -101,7 +101,7 @@ defmodule Mix.Tasks.Advent.Generate.Day do
       @tag :skip
       test "part1 real" do
         input = @real_input
-                |> load_input()
+                |> read_lines()
         result = part1(input)
 
         assert 0 == result
@@ -110,7 +110,7 @@ defmodule Mix.Tasks.Advent.Generate.Day do
       @tag :skip
       test "part2 example" do
         input = @example_input
-                |> load_input()
+                |> read_lines()
         result = part2(input)
 
         assert 0 == result
@@ -119,7 +119,7 @@ defmodule Mix.Tasks.Advent.Generate.Day do
       @tag :skip
       test "part2 real" do
         input = @real_input
-                |> load_input()
+                |> read_lines()
         result = part2(input)
 
         assert 0 == result

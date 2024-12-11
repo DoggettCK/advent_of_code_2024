@@ -1,15 +1,19 @@
 defmodule Test.Common do
-  def load_input(filename, opts \\ []) do
+  def read_file(filename) do
+    File.read!(filename)
+  end
+
+  def read_lines(filename, opts \\ []) do
     trim = Keyword.get(opts, :trim, true)
 
     filename
-    |> File.read!()
+    |> read_file()
     |> String.split("\n", trim: trim)
   end
 
   def read_ints(filename) do
     filename
-    |> load_input()
+    |> read_lines()
     |> Enum.map(fn line ->
       ~r/\d+/
       |> Regex.scan(line)
@@ -25,7 +29,7 @@ defmodule Test.Common do
   def read_grid(filename) do
     grid =
       filename
-      |> load_input()
+      |> read_lines()
       |> Enum.with_index()
       |> Enum.reduce(%{}, fn {row, row_idx}, acc ->
         row
