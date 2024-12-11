@@ -25,6 +25,7 @@ defmodule AdventOfCode2024.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:combinatorics, "~> 0.1.0"},
       {:igniter, "~> 0.4.8"},
       {:mix_test_watch, "~> 1.2", only: [:dev, :test], runtime: false}
       # {:dep_from_hexpm, "~> 0.3.0"},
