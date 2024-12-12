@@ -86,6 +86,19 @@ defmodule Common do
     ]
   end
 
+  def directional_neighbors({x, y}) do
+    %{
+      north: {x, y - 1},
+      east: {x + 1, y},
+      south: {x, y + 1},
+      west: {x - 1, y},
+      northwest: {x - 1, y - 1},
+      northeast: {x + 1, y - 1},
+      southwest: {x - 1, y + 1},
+      southeast: {x + 1, y + 1}
+    }
+  end
+
   def div_rem(n, x) do
     {div(n, x), rem(n, x)}
   end

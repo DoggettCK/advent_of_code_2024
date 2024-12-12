@@ -14,7 +14,17 @@ defmodule Day12 do
     |> Enum.sum()
   end
 
-  def part2(_args) do
+  def part2(args) do
+    %{grid: grid} = args
+
+    regions =
+      grid
+      |> build_graph()
+      |> Graph.components()
+
+    regions
+    |> Enum.map(&calculate_discounted_price(&1, grid))
+    |> Enum.sum()
   end
 
   defp build_graph(grid) do
@@ -61,5 +71,45 @@ defmodule Day12 do
       |> Enum.sum()
 
     area * perimeter
+  end
+
+  defp calculate_discounted_price(region, grid) do
+    area = length(region)
+
+    # number of corners is equal to number of sides
+    corners =
+      region
+      |> Enum.map(&count_corners(&1, grid))
+      |> Enum.sum()
+
+    area * corners
+  end
+
+  defp count_corners(coord, grid) do
+    neighbors = directional_neighbors(coord)
+    curr = Map.get(grid, coord)
+
+    [
+      ~w(north northwest west)a,
+      ~w(west southwest south)a,
+      ~w(south southeast east)a,
+      ~w(east northeast north)a
+    ]
+    |> Enum.map(fn dirs ->
+      dirs
+      |> Enum.map(&Map.get(neighbors, &1))
+      |> Enum.map(&Map.get(grid, &1))
+      |> case do
+        [a, _, c] when curr not in [a, c] ->
+          1
+
+        [^curr, b, ^curr] when b != curr ->
+          1
+
+        _ ->
+          0
+      end
+    end)
+    |> Enum.sum()
   end
 end

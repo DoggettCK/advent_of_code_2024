@@ -29,7 +29,7 @@ defmodule Day12Test do
     assert 1_363_682 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 example" do
     input =
       @example_input
@@ -37,10 +37,10 @@ defmodule Day12Test do
 
     result = part2(input)
 
-    assert 0 == result
+    assert 1206 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 real" do
     input =
       @real_input
@@ -48,6 +48,6 @@ defmodule Day12Test do
 
     result = part2(input)
 
-    assert 0 == result
+    assert 787_680 == result
   end
 end
