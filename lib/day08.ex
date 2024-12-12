@@ -36,14 +36,6 @@ defmodule Day08 do
     |> MapSet.to_list()
   end
 
-  defp filter_out_of_bounds(list, max_x, max_y) do
-    Enum.filter(list, fn
-      {x, _} when x < 0 or x > max_x -> false
-      {_, y} when y < 0 or y > max_y -> false
-      _ -> true
-    end)
-  end
-
   defp part_1_antinodes(a, b, diff_a_b, max_x, max_y) do
     [plus(a, diff_a_b), minus(b, diff_a_b)]
     |> filter_out_of_bounds(max_x, max_y)

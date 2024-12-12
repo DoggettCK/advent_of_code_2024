@@ -89,4 +89,12 @@ defmodule Common do
   def div_rem(n, x) do
     {div(n, x), rem(n, x)}
   end
+
+  def filter_out_of_bounds(list, max_x, max_y) do
+    Enum.filter(list, fn
+      {x, _} when x < 0 or x > max_x -> false
+      {_, y} when y < 0 or y > max_y -> false
+      _ -> true
+    end)
+  end
 end
