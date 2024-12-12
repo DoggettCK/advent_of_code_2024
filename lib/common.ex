@@ -67,4 +67,22 @@ defmodule Common do
     |> Enum.with_index()
     |> Enum.into(%{}, fn {k, v} -> {v, k} end)
   end
+
+  def cardinal_neighbors({x, y}) do
+    [
+      {x, y - 1},
+      {x + 1, y},
+      {x, y + 1},
+      {x - 1, y}
+    ]
+  end
+
+  def diagonal_neighbors({x, y}) do
+    [
+      {x - 1, y - 1},
+      {x + 1, y - 1},
+      {x - 1, y + 1},
+      {x + 1, y + 1}
+    ]
+  end
 end
