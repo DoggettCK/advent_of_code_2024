@@ -24,6 +24,12 @@ defmodule Test.Common do
     end)
   end
 
+  def read_int_line(filename) do
+    filename
+    |> read_ints()
+    |> hd
+  end
+
   @doc """
   Given a filename, read the file into a map with coordinates (i.e. {3, 21}) as
   the key, and the character at those coordinates as the value.

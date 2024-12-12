@@ -85,4 +85,8 @@ defmodule Common do
       {x + 1, y + 1}
     ]
   end
+
+  def div_rem(n, x) do
+    {div(n, x), rem(n, x)}
+  end
 end
