@@ -11,7 +11,7 @@ defmodule Day09Test do
   test "part1 example" do
     input =
       @example_input
-      |> read_lines()
+      |> read_file()
 
     result = part1(input)
 
@@ -22,32 +22,32 @@ defmodule Day09Test do
   test "part1 real" do
     input =
       @real_input
-      |> read_lines()
+      |> read_file()
 
     result = part1(input)
 
     assert 6_340_197_768_906 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 example" do
     input =
       @example_input
-      |> read_lines()
+      |> read_file()
 
     result = part2(input)
 
-    assert 0 == result
+    assert 2858 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 real" do
     input =
       @real_input
-      |> read_lines()
+      |> read_file()
 
     result = part2(input)
 
-    assert 0 == result
+    assert 6_363_913_128_533 == result
   end
 end

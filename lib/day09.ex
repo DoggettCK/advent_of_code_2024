@@ -3,15 +3,26 @@ defmodule Day09 do
 
   def part1(args) do
     args
-    |> hd()
     |> to_filesystem()
     |> compact_filesystem()
     |> checksum()
-
-    # |> print_filesystem()
   end
 
-  def part2(_args) do
+  defmodule Block do
+    defstruct file_id: nil, start: -1, length: -1
+
+    def checksum(%__MODULE__{} = block) do
+      block.start..(block.start + block.length - 1)
+      |> Enum.map(&(&1 * block.file_id))
+      |> Enum.sum()
+    end
+  end
+
+  def part2(args) do
+    args
+    |> to_block_filesystem()
+    |> compact_block_filesystem()
+    |> block_checksum()
   end
 
   defp to_filesystem(int_string) do
@@ -28,6 +39,32 @@ defmodule Day09 do
     |> List.flatten()
     |> Enum.with_index()
     |> Enum.into(%{}, fn {block, idx} -> {idx, block} end)
+  end
+
+  defp to_block_filesystem(int_string) do
+    {blocks, _} =
+      int_string
+      |> string_to_ints()
+      |> Enum.chunk_every(2, 2, [0])
+      |> Enum.with_index()
+      |> Enum.flat_map_reduce(0, fn {[file_blocks, free_space], file_id}, acc ->
+        {
+          [
+            %Block{file_id: file_id, start: acc, length: file_blocks},
+            %Block{file_id: nil, start: acc + file_blocks, length: free_space}
+          ],
+          acc + file_blocks + free_space
+        }
+      end)
+
+    files =
+      blocks
+      |> Enum.reject(&is_nil(&1.file_id))
+      |> Enum.into(%{}, &{&1.file_id, &1})
+
+    free_blocks = Enum.filter(blocks, &is_nil(&1.file_id))
+
+    %{free_space: free_blocks, files: files}
   end
 
   defp compact_filesystem(filesystem) do
@@ -59,15 +96,61 @@ defmodule Day09 do
     end)
   end
 
-  defp print_filesystem(filesystem) do
-    0..(map_size(filesystem) - 1)
-    |> Enum.map(fn idx ->
-      case Map.get(filesystem, idx) do
-        %{file_id: nil} -> "."
-        %{file_id: file_id} -> to_string(file_id)
+  defp compact_block_filesystem(filesystem) do
+    max_id = map_size(filesystem.files) - 1
+
+    max_id..0
+    |> Enum.reduce(filesystem, fn file_id, fs ->
+      %{files: files, free_space: free_space} = fs
+
+      file = Map.get(files, file_id)
+
+      case find_free_space(free_space, file) do
+        {:no_space_found, ^free_space, ^file} ->
+          fs
+
+        {:ok, updated_free_space, updated_file} ->
+          %{fs | files: Map.put(files, file_id, updated_file), free_space: updated_free_space}
       end
     end)
-    |> Enum.join("")
+  end
+
+  defp find_free_space(fs_blocks, file, seen \\ [])
+
+  defp find_free_space([], file, seen) do
+    {:no_space_found, Enum.reverse(seen), file}
+  end
+
+  defp find_free_space(
+         [%Block{start: fs_start, length: fs_length} | fs_blocks],
+         %Block{start: f_start, length: fs_length} = file,
+         seen
+       )
+       when f_start > fs_start do
+    updated_file = %Block{file | start: fs_start}
+
+    {:ok, Enum.reverse(seen) ++ fs_blocks, updated_file}
+  end
+
+  defp find_free_space(
+         [%Block{start: fs_start, length: fs_length} | fs_blocks],
+         %Block{start: f_start, length: f_length} = file,
+         seen
+       )
+       when fs_length > f_length and f_start > fs_start do
+    shrunk_free_space = %Block{
+      file_id: nil,
+      start: fs_start + f_length,
+      length: fs_length - f_length
+    }
+
+    updated_file = %Block{file | start: fs_start}
+
+    {:ok, Enum.reverse(seen) ++ [shrunk_free_space | fs_blocks], updated_file}
+  end
+
+  defp find_free_space([fs | fs_blocks], file, seen) do
+    find_free_space(fs_blocks, file, [fs | seen])
   end
 
   defp string_to_ints(int_string) do
@@ -91,5 +174,14 @@ defmodule Day09 do
           acc + idx * file_id
       end
     end)
+  end
+
+  defp block_checksum(filesystem) do
+    %{files: files} = filesystem
+
+    files
+    |> Map.values()
+    |> Enum.map(&Block.checksum/1)
+    |> Enum.sum()
   end
 end

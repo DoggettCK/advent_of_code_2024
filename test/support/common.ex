@@ -1,6 +1,8 @@
 defmodule Test.Common do
   def read_file(filename) do
-    File.read!(filename)
+    filename
+    |> File.read!()
+    |> String.trim()
   end
 
   def read_lines(filename, opts \\ []) do

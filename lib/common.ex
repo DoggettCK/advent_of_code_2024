@@ -61,4 +61,10 @@ defmodule Common do
     |> List.wrap()
     |> then(&filter_from_grid(grid, &1))
   end
+
+  def list_to_arraymap(list) do
+    list
+    |> Enum.with_index()
+    |> Enum.into(%{}, fn {k, v} -> {v, k} end)
+  end
 end
