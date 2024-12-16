@@ -17,7 +17,7 @@ defmodule Test.Common do
     filename
     |> read_lines()
     |> Enum.map(fn line ->
-      ~r/\d+/
+      ~r/-?\d+/
       |> Regex.scan(line)
       |> List.flatten()
       |> Enum.map(&String.to_integer/1)
