@@ -26,7 +26,12 @@ defmodule Day14 do
     |> Enum.product()
   end
 
-  def part2(_args) do
+  def part2(args, bounds) do
+    {max_x, max_y} = bounds
+
+    args
+    |> build_robots()
+    |> run_tree_simulation(max_x * max_y, bounds)
   end
 
   defp build_robots(ints) do
@@ -38,9 +43,6 @@ defmodule Day14 do
   defp run_simulation(robots, iterations, bounds) do
     robots
     |> simulate(fn
-      100, state ->
-        {:halt, state}
-
       ^iterations, state ->
         {:halt, state}
 
@@ -48,6 +50,46 @@ defmodule Day14 do
         new_state = move_robots(state, bounds)
 
         {:cont, new_state}
+    end)
+  end
+
+  defp run_tree_simulation(robots, iterations, bounds) do
+    {robots, 2 * length(robots), -1}
+    |> simulate(fn
+      ^iterations, {_bots, _lc, lc_iteration} ->
+        # Convert from zero-based to one-based for seconds elapsed
+        {:halt, lc_iteration + 1}
+
+      iteration, {bots, least_components, lc_iteration} ->
+        new_robots = move_robots(bots, bounds)
+
+        graph = build_graph(new_robots)
+
+        num_components = graph |> Graph.components() |> length()
+
+        if num_components < least_components do
+          {:cont, {new_robots, num_components, iteration}}
+        else
+          {:cont, {new_robots, least_components, lc_iteration}}
+        end
+    end)
+  end
+
+  defp build_graph(robots) do
+    # For every robot, add an edge to any neighbor that also contains a robot.
+    # Then we'll break it into components, and the graph with the smallest
+    # number of components (ideally 2) will be the tree shape.
+    robot_map = Enum.into(robots, %{}, &{&1.pos, "#"})
+
+    robot_map
+    |> Enum.reduce(Graph.new(type: :undirected), fn {pos, _}, outer_g ->
+      pos
+      |> cardinal_neighbors()
+      |> Enum.filter(&Map.has_key?(robot_map, &1))
+      |> Enum.reduce(outer_g, fn neighbor, inner_g ->
+        # weight is always 1 since they're cardinal neighbors
+        Graph.add_edge(inner_g, pos, neighbor)
+      end)
     end)
   end
 

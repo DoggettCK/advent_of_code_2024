@@ -29,25 +29,25 @@ defmodule Day14Test do
     assert 221_616_000 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 example" do
     input =
       @example_input
       |> read_ints()
 
-    result = part2(input)
+    result = part2(input, {11, 7})
 
-    assert 0 == result
+    assert 4 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 real" do
     input =
       @real_input
       |> read_ints()
 
-    result = part2(input)
+    result = part2(input, {101, 103})
 
-    assert 0 == result
+    assert 7572 == result
   end
 end
