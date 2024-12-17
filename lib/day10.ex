@@ -5,8 +5,7 @@ defmodule Day10 do
     %{grid: grid} = args
 
     grid
-    |> filter_from_grid(0)
-    |> Map.keys()
+    |> grid_positions(0)
     |> Enum.map(&find_paths(&1, args, true))
     |> Enum.sum()
   end
@@ -15,8 +14,7 @@ defmodule Day10 do
     %{grid: grid} = args
 
     grid
-    |> filter_from_grid(0)
-    |> Map.keys()
+    |> grid_positions(0)
     |> Enum.map(&find_paths(&1, args, false))
     |> Enum.sum()
   end

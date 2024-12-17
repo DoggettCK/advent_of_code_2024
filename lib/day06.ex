@@ -40,8 +40,7 @@ defmodule Day06 do
       }
       |> simulate(&run_simulation/2)
       |> Map.get(:grid)
-      |> filter_from_grid(~w(^ > V <))
-      |> Map.keys()
+      |> grid_positions(~w(^ > V <))
 
     candidates
     |> Enum.filter(fn coord ->
@@ -63,8 +62,7 @@ defmodule Day06 do
   defp get_initial_guard_position(grid) do
     coords =
       grid
-      |> filter_from_grid("^")
-      |> Map.keys()
+      |> grid_positions("^")
       |> hd()
 
     {coords, :north}

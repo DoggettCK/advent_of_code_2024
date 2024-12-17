@@ -31,8 +31,7 @@ defmodule Day04 do
 
   defp find_chars(grid, char) do
     grid
-    |> filter_from_grid(char)
-    |> Map.keys()
+    |> grid_positions(char)
     |> Enum.sort()
   end
 

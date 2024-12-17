@@ -40,15 +40,7 @@ defmodule Test.Common do
     grid =
       filename
       |> read_lines()
-      |> Enum.with_index()
-      |> Enum.reduce(%{}, fn {row, row_idx}, acc ->
-        row
-        |> String.split("", trim: true)
-        |> Enum.with_index()
-        |> Enum.into(acc, fn {char, col_idx} ->
-          {{col_idx, row_idx}, char}
-        end)
-      end)
+      |> build_grid_from_lines()
 
     grid =
       case type do
@@ -65,4 +57,30 @@ defmodule Test.Common do
   end
 
   def read_int_grid(filename), do: read_grid(filename, type: :int)
+
+  def read_grid_from_string(str, opts \\ []) do
+    trim = Keyword.get(opts, :trim, true)
+
+    grid =
+      str
+      |> String.split("\n", trim: trim)
+      |> build_grid_from_lines()
+
+    {{max_x, max_y}, _} = Enum.max_by(grid, fn {coord, _} -> coord end)
+
+    %{grid: grid, max_x: max_x, max_y: max_y}
+  end
+
+  defp build_grid_from_lines(lines) do
+    lines
+    |> Enum.with_index()
+    |> Enum.reduce(%{}, fn {row, row_idx}, acc ->
+      row
+      |> String.split("", trim: true)
+      |> Enum.with_index()
+      |> Enum.into(acc, fn {char, col_idx} ->
+        {{col_idx, row_idx}, char}
+      end)
+    end)
+  end
 end

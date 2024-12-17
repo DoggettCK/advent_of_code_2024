@@ -62,6 +62,12 @@ defmodule Common do
     |> then(&filter_from_grid(grid, &1))
   end
 
+  def grid_positions(grid, value) do
+    grid
+    |> filter_from_grid(value)
+    |> Map.keys()
+  end
+
   def list_to_arraymap(list) do
     list
     |> Enum.with_index()
@@ -109,5 +115,22 @@ defmodule Common do
       {_, y} when y < 0 or y > max_y -> false
       _ -> true
     end)
+  end
+
+  def add({x1, y1}, {x2, y2}), do: {x1 + x2, y1 + y2}
+
+  def grid_to_string(grid, default \\ ".") do
+    {{min_x, min_y}, _} = Enum.min_by(grid, &elem(&1, 0))
+    {{max_x, max_y}, _} = Enum.max_by(grid, &elem(&1, 0))
+
+    min_y..max_y
+    |> Enum.map(fn row ->
+      min_x..max_x
+      |> Enum.map(fn col ->
+        Map.get(grid, {col, row}, default)
+      end)
+      |> Enum.join("")
+    end)
+    |> Enum.join("\n")
   end
 end
