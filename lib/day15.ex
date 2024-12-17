@@ -13,7 +13,16 @@ defmodule Day15 do
     |> Enum.sum()
   end
 
-  def part2(_grid, _dirs) do
+  def part2(grid, dirs) do
+    %{grid: grid} = grid
+
+    grid
+    |> grid_positions("@")
+    |> hd()
+    |> do_movements(dirs, grid)
+    |> grid_positions("[")
+    |> Enum.map(&gps/1)
+    |> Enum.sum()
   end
 
   defp do_movements(pos, dirs, grid) do
@@ -22,7 +31,7 @@ defmodule Day15 do
       next_pos = next_position(place, dir)
 
       case Map.get(warehouse, next_pos) do
-        "O" ->
+        c when c in ["[", "O", "]"] ->
           next_pos
           |> push(dir, warehouse)
           |> case do
@@ -60,24 +69,56 @@ defmodule Day15 do
   end
 
   defp push(position, direction, grid) do
-    {:queue.from_list([position]), []}
-    |> simulate(fn _iterations, {queue, safe_pushes} ->
+    {:queue.from_list([position]), MapSet.new(), []}
+    |> simulate(fn _iterations, {queue, seen, safe_pushes} ->
       if :queue.is_empty(queue) do
         {:halt, safe_pushes}
       else
         {{:value, current_pos}, queue} = :queue.out(queue)
 
-        next_pos = next_position(current_pos, direction)
+        if current_pos in seen do
+          {:cont, {queue, seen, safe_pushes}}
+        else
+          seen = MapSet.put(seen, current_pos)
 
-        case Map.get(grid, next_pos) do
-          "#" ->
-            {:halt, []}
+          next_pos = next_position(current_pos, direction)
 
-          "O" ->
-            {:cont, {:queue.in(next_pos, queue), [{current_pos, next_pos} | safe_pushes]}}
+          queue =
+            case {direction, Map.get(grid, current_pos)} do
+              {"^", "]"} ->
+                current_pos
+                |> next_position("<")
+                |> :queue.in(queue)
 
-          _ ->
-            {:cont, {queue, [{current_pos, next_pos} | safe_pushes]}}
+              {"v", "]"} ->
+                current_pos
+                |> next_position("<")
+                |> :queue.in(queue)
+
+              {"^", "["} ->
+                current_pos
+                |> next_position(">")
+                |> :queue.in(queue)
+
+              {"v", "["} ->
+                current_pos
+                |> next_position(">")
+                |> :queue.in(queue)
+
+              _ ->
+                queue
+            end
+
+          case Map.get(grid, next_pos) do
+            "#" ->
+              {:halt, []}
+
+            c when c in ["[", "O", "]"] ->
+              {:cont, {:queue.in(next_pos, queue), seen, [{current_pos, next_pos} | safe_pushes]}}
+
+            _ ->
+              {:cont, {queue, seen, [{current_pos, next_pos} | safe_pushes]}}
+          end
         end
       end
     end)

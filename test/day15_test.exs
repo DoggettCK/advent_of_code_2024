@@ -29,39 +29,49 @@ defmodule Day15Test do
     assert 1_383_666 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 example" do
     {grid, dirs} =
       @example_input
-      |> parse_input()
+      |> parse_input(&part_2_transform/1)
 
     result = part2(grid, dirs)
 
-    assert 0 == result
+    assert 9021 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 real" do
     {grid, dirs} =
       @real_input
-      |> parse_input()
+      |> parse_input(&part_2_transform/1)
 
     result = part2(grid, dirs)
 
-    assert 0 == result
+    assert 1_412_866 == result
   end
 
-  defp parse_input(filename) do
+  defp parse_input(filename, transform \\ & &1) do
     [grid_lines, directions] =
       filename
       |> read_file()
       |> String.split("\n\n")
 
     {
-      read_grid_from_string(grid_lines),
+      grid_lines
+      |> transform.()
+      |> read_grid_from_string(),
       directions
       |> String.replace("\n", "")
       |> String.graphemes()
     }
+  end
+
+  defp part_2_transform(grid_str) do
+    grid_str
+    |> String.replace("#", "##")
+    |> String.replace("O", "[]")
+    |> String.replace(".", "..")
+    |> String.replace("@", "@.")
   end
 end
