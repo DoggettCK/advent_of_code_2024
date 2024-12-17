@@ -73,24 +73,26 @@ defmodule Day09 do
     |> Tuple.append(filesystem)
     |> simulate(fn _, {front, rear, fs} ->
       if front >= rear do
-        {:halt, fs}
+        return(fs)
       else
         case {Map.get(fs, front), Map.get(fs, rear)} do
           {%{file_id: nil}, %{file_id: nil}} ->
-            {:cont, {front, rear - 1, fs}}
+            continue({front, rear - 1, fs})
 
           {%{file_id: nil} = null_block, block} ->
-            {:cont,
-             {front + 1, rear - 1,
+            continue({
+              front + 1,
+              rear - 1,
               fs
               |> Map.put(front, block)
-              |> Map.put(rear, null_block)}}
+              |> Map.put(rear, null_block)
+            })
 
           {_block, %{file_id: nil}} ->
-            {:cont, {front + 1, rear - 1, fs}}
+            continue({front + 1, rear - 1, fs})
 
           _ ->
-            {:cont, {front + 1, rear, fs}}
+            continue({front + 1, rear, fs})
         end
       end
     end)

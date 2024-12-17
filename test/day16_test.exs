@@ -29,7 +29,7 @@ defmodule Day16Test do
     assert 85420 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 example" do
     input =
       @example_input
@@ -37,10 +37,10 @@ defmodule Day16Test do
 
     result = part2(input)
 
-    assert 0 == result
+    assert 45 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 real" do
     input =
       @real_input
@@ -48,6 +48,6 @@ defmodule Day16Test do
 
     result = part2(input)
 
-    assert 0 == result
+    assert 492 == result
   end
 end

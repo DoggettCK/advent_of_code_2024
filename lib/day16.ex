@@ -49,7 +49,13 @@ defmodule Day16 do
     traverse_maze(grid, start, stop)
   end
 
-  def part2(_args) do
+  def part2(args) do
+    %{grid: grid} = args
+
+    start = grid |> grid_positions("S") |> hd()
+    stop = grid |> grid_positions("E") |> hd()
+
+    traverse_maze_with_path(grid, start, stop)
   end
 
   defp traverse_maze(grid, start, stop) do
@@ -59,7 +65,7 @@ defmodule Day16 do
     |> simulate(fn _iteration, {pq, seen} ->
       case PriorityQueue.pop(pq) do
         {{:value, {%Location{position: ^stop}, cost}}, _pq} ->
-          {:halt, cost}
+          return(cost)
 
         {{:value, {location, cost}}, new_pq} ->
           key = Location.key(location)
@@ -82,13 +88,74 @@ defmodule Day16 do
                 cost + 1000
               )
 
-            {:cont, {new_pq, seen}}
+            continue({new_pq, seen})
           else
-            {:cont, {new_pq, seen}}
+            continue({new_pq, seen})
           end
 
         other ->
           IO.inspect(other, label: "UNKNOWN STATE")
+      end
+    end)
+  end
+
+  defp traverse_maze_with_path(grid, start, stop) do
+    starting_location = %Location{position: start, positions: [start]}
+
+    {
+      PriorityQueue.new() |> PriorityQueue.push({starting_location, 0}, 0),
+      %{},
+      nil,
+      MapSet.new()
+    }
+    |> simulate(fn _iteration, {pq, seen, goal_cost, all_spots} ->
+      case PriorityQueue.pop(pq) do
+        {:empty, _} ->
+          return(MapSet.size(all_spots))
+
+        {{:value, {location, cost}}, new_pq} ->
+          if !is_nil(goal_cost) and cost > goal_cost do
+            return(MapSet.size(all_spots))
+          else
+            if location.position == stop do
+              continue({
+                new_pq,
+                seen,
+                cost,
+                location.positions
+                |> MapSet.new()
+                |> MapSet.union(all_spots)
+              })
+            else
+              key = Location.key(location)
+
+              if Map.get(seen, key, @default_cost) >= cost do
+                seen = Map.put(seen, key, cost)
+
+                next_location = Location.step(location)
+
+                new_pq =
+                  grid
+                  |> Map.get(next_location.position)
+                  |> case do
+                    "#" -> new_pq
+                    _ -> PriorityQueue.push(new_pq, {next_location, cost + 1}, cost + 1)
+                  end
+                  |> PriorityQueue.push(
+                    {Location.turn_clockwise(location), cost + 1000},
+                    cost + 1000
+                  )
+                  |> PriorityQueue.push(
+                    {Location.turn_counter_clockwise(location), cost + 1000},
+                    cost + 1000
+                  )
+
+                continue({new_pq, seen, goal_cost, all_spots})
+              else
+                continue({new_pq, seen, goal_cost, all_spots})
+              end
+            end
+          end
       end
     end)
   end

@@ -72,12 +72,12 @@ defmodule Day15 do
     {:queue.from_list([position]), MapSet.new(), []}
     |> simulate(fn _iterations, {queue, seen, safe_pushes} ->
       if :queue.is_empty(queue) do
-        {:halt, safe_pushes}
+        return(safe_pushes)
       else
         {{:value, current_pos}, queue} = :queue.out(queue)
 
         if current_pos in seen do
-          {:cont, {queue, seen, safe_pushes}}
+          continue({queue, seen, safe_pushes})
         else
           seen = MapSet.put(seen, current_pos)
 
@@ -111,13 +111,21 @@ defmodule Day15 do
 
           case Map.get(grid, next_pos) do
             "#" ->
-              {:halt, []}
+              return([])
 
             c when c in ["[", "O", "]"] ->
-              {:cont, {:queue.in(next_pos, queue), seen, [{current_pos, next_pos} | safe_pushes]}}
+              continue({
+                :queue.in(next_pos, queue),
+                seen,
+                [{current_pos, next_pos} | safe_pushes]
+              })
 
             _ ->
-              {:cont, {queue, seen, [{current_pos, next_pos} | safe_pushes]}}
+              continue({
+                queue,
+                seen,
+                [{current_pos, next_pos} | safe_pushes]
+              })
           end
         end
       end

@@ -80,20 +80,20 @@ defmodule Day06 do
     if(iteration > 6_000) do
       # Not sure why it isn't detecting a cycle after 6K iterations, but adding
       # them to the list gives the correct answer without failing earlier ones.
-      {:halt, Map.put(state, :has_cycle, true)}
+      return(Map.put(state, :has_cycle, true))
     else
       case next_action(state) do
         {:turn, new_guard_dir} ->
-          {:cont, %{state | guard_dir: new_guard_dir}}
+          continue(%{state | guard_dir: new_guard_dir})
 
         {:step, new_location} ->
-          {:cont, %{state | grid: Map.put(grid, guard_pos, char), guard_pos: new_location}}
+          continue(%{state | grid: Map.put(grid, guard_pos, char), guard_pos: new_location})
 
-        {:halt, new_location} ->
-          {:halt, %{state | grid: Map.put(grid, guard_pos, char), guard_pos: new_location}}
+        {:stop, new_location} ->
+          return(%{state | grid: Map.put(grid, guard_pos, char), guard_pos: new_location})
 
         :found_cycle ->
-          {:halt, Map.put(state, :has_cycle, true)}
+          return(Map.put(state, :has_cycle, true))
       end
     end
   end
@@ -118,16 +118,16 @@ defmodule Day06 do
         :found_cycle
 
       next_x < 0 ->
-        {:halt, {next_x, next_y}}
+        {:stop, {next_x, next_y}}
 
       next_y < 0 ->
-        {:halt, {next_x, next_y}}
+        {:stop, {next_x, next_y}}
 
       next_x > max_x ->
-        {:halt, {next_x, next_y}}
+        {:stop, {next_x, next_y}}
 
       next_y > max_y ->
-        {:halt, {next_x, next_y}}
+        {:stop, {next_x, next_y}}
 
       true ->
         {:step, {next_x, next_y}}

@@ -44,12 +44,12 @@ defmodule Day14 do
     robots
     |> simulate(fn
       ^iterations, state ->
-        {:halt, state}
+        return(state)
 
       _, state ->
-        new_state = move_robots(state, bounds)
-
-        {:cont, new_state}
+        state
+        |> move_robots(bounds)
+        |> continue()
     end)
   end
 
@@ -58,7 +58,7 @@ defmodule Day14 do
     |> simulate(fn
       ^iterations, {_bots, _lc, lc_iteration} ->
         # Convert from zero-based to one-based for seconds elapsed
-        {:halt, lc_iteration + 1}
+        return(lc_iteration + 1)
 
       iteration, {bots, least_components, lc_iteration} ->
         new_robots = move_robots(bots, bounds)
@@ -68,9 +68,9 @@ defmodule Day14 do
         num_components = graph |> Graph.components() |> length()
 
         if num_components < least_components do
-          {:cont, {new_robots, num_components, iteration}}
+          continue({new_robots, num_components, iteration})
         else
-          {:cont, {new_robots, least_components, lc_iteration}}
+          continue({new_robots, least_components, lc_iteration})
         end
     end)
   end

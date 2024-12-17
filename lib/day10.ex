@@ -25,12 +25,12 @@ defmodule Day10 do
     {:queue.from_list([node]), MapSet.new(), 0}
     |> simulate(fn _iteration, {queue, seen, found} ->
       if :queue.is_empty(queue) do
-        {:halt, found}
+        return(found)
       else
         {{:value, node}, queue} = :queue.out(queue)
 
         if node in seen do
-          {:cont, {queue, seen, found}}
+          continue({queue, seen, found})
         else
           seen =
             if track_seen do
@@ -41,7 +41,7 @@ defmodule Day10 do
 
           case Map.get(grid, node) do
             9 ->
-              {:cont, {queue, seen, found + 1}}
+              continue({queue, seen, found + 1})
 
             level ->
               neighbors =
@@ -51,7 +51,7 @@ defmodule Day10 do
                 |> Enum.filter(fn n -> Map.get(grid, n) == level + 1 end)
                 |> :queue.from_list()
 
-              {:cont, {:queue.join(queue, neighbors), seen, found}}
+              continue({:queue.join(queue, neighbors), seen, found})
           end
         end
       end

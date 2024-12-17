@@ -34,13 +34,18 @@ defmodule Common do
   `step_simulation` function will take 2 params, `iteration` and `state` (`x`
   and `acc`), and should return either `{:cont, next_state}` or `{:halt,
   next_state}`. Until the `:halt` tuple is returned, the function will run
-  forever.
+  forever. The `return/1` and `continue/1` helpers will wrap these for you to
+  be more like imperative languages.
   """
   def simulate(initial_state, step_simulation) do
     0
     |> Stream.iterate(&(&1 + 1))
     |> Enum.reduce_while(initial_state, step_simulation)
   end
+
+  # helpers for Enum.reduce_while/simulate
+  def return(value), do: {:halt, value}
+  def continue(value), do: {:cont, value}
 
   def reject_from_grid(grid, values_to_remove) when is_list(values_to_remove) do
     Map.reject(grid, fn {_, v} -> v in values_to_remove end)
