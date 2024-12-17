@@ -2,23 +2,20 @@ defmodule Mix.Tasks.Advent.Generate.Day do
   # https://www.youtube.com/watch?v=gpaV4bgEG-g
   use Igniter.Mix.Task
 
-  @example "mix advent.generate.day --example arg"
+  @example "mix advent.generate.day 1"
 
-  @shortdoc "A short description of your task"
+  @shortdoc "Generate code for a numbered day of Advent of Code"
   @moduledoc """
   #{@shortdoc}
 
-  Longer explanation of your task
+  Given a day between 1-25, generates a module, test file, and real/example
+  input files.
 
   ## Example
 
   ```bash
   #{@example}
   ```
-
-  ## Options
-
-  * `--example-option` or `-e` - Docs for your option
   """
 
   @impl Igniter.Mix.Task
@@ -70,13 +67,15 @@ defmodule Mix.Tasks.Advent.Generate.Day do
     |> Igniter.create_new_file(example_input_file, "\n")
     |> Igniter.create_new_file(real_input_file, "\n")
     |> Igniter.Project.Module.create_module(day_module_name, """
-    def part1(_args) do
+      import Common
 
-    end
+      def part1(_args) do
 
-    def part2(_args) do
+      end
 
-    end
+      def part2(_args) do
+
+      end
     """)
     |> Igniter.Project.Module.create_module(
       test_module_name,
