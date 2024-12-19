@@ -139,6 +139,14 @@ defmodule Common do
     |> Enum.join("\n")
   end
 
+  def print_grid(grid) do
+    grid
+    |> grid_to_string()
+    |> IO.puts()
+
+    grid
+  end
+
   def tails(list) do
     list
     |> Enum.reverse()
