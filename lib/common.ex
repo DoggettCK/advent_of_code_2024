@@ -138,4 +138,16 @@ defmodule Common do
     end)
     |> Enum.join("\n")
   end
+
+  def tails(list) do
+    list
+    |> Enum.reverse()
+    |> do_tails([[]])
+  end
+
+  defp do_tails([], results), do: results
+
+  defp do_tails([h | t], [last | _] = results) do
+    do_tails(t, [[h | last] | results])
+  end
 end
