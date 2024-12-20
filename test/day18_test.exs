@@ -29,25 +29,25 @@ defmodule Day18Test do
     assert 372 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 example" do
     input =
       @example_input
       |> read_ints()
 
-    result = part2(input)
+    result = part2(input, 6)
 
-    assert 0 == result
+    assert "6,1" == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 real" do
     input =
       @real_input
       |> read_ints()
 
-    result = part2(input)
+    result = part2(input, 70)
 
-    assert 0 == result
+    assert "25,6" == result
   end
 end
