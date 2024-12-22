@@ -60,7 +60,7 @@ defmodule Day19Test do
 
     result = part2(patterns, designs)
 
-    assert 650354687260341 == result
+    assert 650_354_687_260_341 == result
   end
 
   defp parse_input(filename) do

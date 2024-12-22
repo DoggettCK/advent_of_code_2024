@@ -43,8 +43,8 @@ defmodule Day16 do
   def part1(args) do
     %{grid: grid} = args
 
-    start = grid |> grid_positions("S") |> hd()
-    stop = grid |> grid_positions("E") |> hd()
+    start = find_single(grid, "S")
+    stop = find_single(grid, "E")
 
     traverse_maze(grid, start, stop)
   end
@@ -52,8 +52,8 @@ defmodule Day16 do
   def part2(args) do
     %{grid: grid} = args
 
-    start = grid |> grid_positions("S") |> hd()
-    stop = grid |> grid_positions("E") |> hd()
+    start = find_single(grid, "S")
+    stop = find_single(grid, "E")
 
     traverse_maze_with_path(grid, start, stop)
   end

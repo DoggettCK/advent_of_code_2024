@@ -67,6 +67,12 @@ defmodule Common do
     |> then(&filter_from_grid(grid, &1))
   end
 
+  def find_single(grid, value) do
+    grid
+    |> grid_positions(value)
+    |> hd()
+  end
+
   def grid_positions(grid, value) do
     grid
     |> filter_from_grid(value)
@@ -158,4 +164,6 @@ defmodule Common do
   defp do_tails([h | t], [last | _] = results) do
     do_tails(t, [[h | last] | results])
   end
+
+  def manhattan_distance({x1, y1}, {x2, y2}), do: abs(x2 - x1) + abs(y2 - y1)
 end

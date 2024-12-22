@@ -6,9 +6,15 @@ defmodule Day11Test do
 
   @example_input "test/input/day11/example"
   @real_input "test/input/day11/real"
+  @cache_name :day11_cache
 
   setup_all do
-    Cachex.start_link(:day11_cache)
+    Cachex.start_link(@cache_name)
+    :ok
+  end
+
+  setup do
+    Cachex.reset(@cache_name)
     :ok
   end
 
