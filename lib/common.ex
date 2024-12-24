@@ -166,4 +166,32 @@ defmodule Common do
   end
 
   def manhattan_distance({x1, y1}, {x2, y2}), do: abs(x2 - x1) + abs(y2 - y1)
+
+  def pairs(list) when is_list(list) do
+    Enum.chunk_every(list, 2, 1, :discard)
+  end
+
+  def pairs(str) when is_binary(str) do
+    str
+    |> String.graphemes()
+    |> pairs()
+  end
+
+  def pairwise(val, func) when is_list(val) or (is_binary(val) and is_function(func, 2)) do
+    val
+    |> pairs()
+    |> Enum.map(fn [a, b] ->
+      func.(a, b)
+    end)
+  end
+
+  def shortest_paths(graph, v1, v2) do
+    {_, paths} =
+      graph
+      |> Graph.Pathfinding.all(v1, v2)
+      |> Enum.group_by(&length/1)
+      |> Enum.min_by(&elem(&1, 0))
+
+    paths
+  end
 end
