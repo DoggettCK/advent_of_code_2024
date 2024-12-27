@@ -5,6 +5,7 @@ defmodule Day22Test do
   import Test.Common
 
   @example_input "test/input/day22/example"
+  @example2_input "test/input/day22/example2"
   @real_input "test/input/day22/real"
 
   # @tag :skip
@@ -29,18 +30,18 @@ defmodule Day22Test do
     assert 18_525_593_556 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 example" do
     input =
-      @example_input
+      @example2_input
       |> read_ints()
 
     result = part2(input)
 
-    assert 0 == result
+    assert 23 == result
   end
 
-  @tag :skip
+  # @tag :skip
   test "part2 real" do
     input =
       @real_input
@@ -48,6 +49,6 @@ defmodule Day22Test do
 
     result = part2(input)
 
-    assert 0 == result
+    assert 2089 == result
   end
 end
