@@ -38,8 +38,113 @@ defmodule Day24 do
     |> elem(0)
   end
 
-  def part2(_args) do
+  def part2(args) do
+    operations = parse_operations(args)
+
+    operations_map =
+      operations
+      |> Enum.into(%{}, &{&1.dest, Map.drop(&1, [:dest])})
+
+    ones =
+      operations
+      |> Enum.filter(&xy_operation?/1)
+      |> Enum.reduce(%{}, fn operation, acc ->
+        %{left: left, right: right, op: op, dest: dest} = operation
+
+        l = get_id(left)
+        r = get_id(right)
+
+        case {l, r, op} do
+          {^l, ^l, "XOR"} ->
+            Map.put(acc, l, dest)
+
+          {^l, ^l, "AND"} ->
+            acc
+        end
+      end)
+
+    # Figured out rjm <-> wsv manually
+    swaps =
+      simulate([["rjm", "wsv"]], fn
+        45, new_swaps ->
+          return(new_swaps)
+
+        i, new_swaps ->
+          target = "z#{i |> to_string() |> String.pad_leading(2, "0")}"
+          one_dest = Map.get(ones, i)
+
+          target_op = Map.get(operations_map, target)
+
+          if "XOR" == target_op.op do
+            continue(new_swaps)
+          else
+            {replacement, _} =
+              operations_map
+              |> Enum.find(fn
+                {_dest, %{left: ^one_dest, op: "XOR"}} -> true
+                {_dest, %{right: ^one_dest, op: "XOR"}} -> true
+                _ -> false
+              end)
+
+            continue([[target, replacement] | new_swaps])
+          end
+      end)
+
+    operations_map =
+      swaps
+      |> Enum.reduce(operations_map, fn [a, b], acc ->
+        a_val = Map.get(acc, a)
+        b_val = Map.get(acc, b)
+
+        acc
+        |> Map.put(a, b_val)
+        |> Map.put(b, a_val)
+      end)
+
+    swaps
+    |> simulate(fn
+      1, new_swaps ->
+        continue(new_swaps)
+
+      45, new_swaps ->
+        return(new_swaps)
+
+      i, new_swaps ->
+        target = "z#{i |> to_string() |> String.pad_leading(2, "0")}"
+
+        %{op: op, left: l, right: r} = Map.get(operations_map, target)
+
+        if "XOR" == op do
+          continue(new_swaps)
+        else
+          left_op = Map.get(operations_map, l)
+          right_op = Map.get(operations_map, r)
+
+          case {left_op, right_op} do
+            {%{op: "OR"}, %{op: "XOR"}} ->
+              continue(new_swaps)
+
+            {%{op: "XOR"}, %{op: "OR"}} ->
+              continue(new_swaps)
+
+            {%{op: "OR"}, _} ->
+              continue([[r, Map.get(ones, i)] | new_swaps])
+
+            _ ->
+              continue([[l, Map.get(ones, i)] | new_swaps])
+          end
+        end
+    end)
+    |> List.flatten()
+    |> Enum.sort()
+    |> Enum.join(",")
+
+    # return swaps.flat().sort().join(',');
   end
+
+  defp xy_operation?(%{left: "x" <> _, right: "y" <> _}), do: true
+  defp xy_operation?(%{left: "y" <> _, right: "x" <> _}), do: true
+  defp xy_operation?(_), do: false
 
   defp parse_wires(args) do
     args
@@ -72,4 +177,10 @@ defmodule Day24 do
   defp run_instruction("AND", left, right), do: left &&& right
   defp run_instruction("XOR", left, right), do: bxor(left, right)
   defp run_instruction("OR", left, right), do: left ||| right
+
+  defp get_id(name) do
+    ~r/^[xy]/
+    |> Regex.replace(name, "")
+    |> String.to_integer()
+  end
 end

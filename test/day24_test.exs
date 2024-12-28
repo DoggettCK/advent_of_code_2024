@@ -41,18 +41,7 @@ defmodule Day24Test do
     assert 65_740_327_379_952 == result
   end
 
-  @tag :skip
-  test "part2 example" do
-    input =
-      @example_input
-      |> read_lines(trim: false)
-
-    result = part2(input)
-
-    assert 0 == result
-  end
-
-  @tag :skip
+  # @tag :skip
   test "part2 real" do
     input =
       @real_input
@@ -60,6 +49,6 @@ defmodule Day24Test do
 
     result = part2(input)
 
-    assert 0 == result
+    assert "bgs,pqc,rjm,swt,wsv,z07,z13,z31" == result
   end
 end
