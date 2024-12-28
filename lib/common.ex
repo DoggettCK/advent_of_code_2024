@@ -194,4 +194,17 @@ defmodule Common do
 
     paths
   end
+
+  def build_grid_from_lines(lines) do
+    lines
+    |> Enum.with_index()
+    |> Enum.reduce(%{}, fn {row, row_idx}, acc ->
+      row
+      |> String.split("", trim: true)
+      |> Enum.with_index()
+      |> Enum.into(acc, fn {char, col_idx} ->
+        {{col_idx, row_idx}, char}
+      end)
+    end)
+  end
 end

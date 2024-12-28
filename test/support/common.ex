@@ -1,4 +1,6 @@
 defmodule Test.Common do
+  import Common, only: [build_grid_from_lines: 1]
+
   def read_file(filename) do
     filename
     |> File.read!()
@@ -69,18 +71,5 @@ defmodule Test.Common do
     {{max_x, max_y}, _} = Enum.max_by(grid, fn {coord, _} -> coord end)
 
     %{grid: grid, max_x: max_x, max_y: max_y}
-  end
-
-  defp build_grid_from_lines(lines) do
-    lines
-    |> Enum.with_index()
-    |> Enum.reduce(%{}, fn {row, row_idx}, acc ->
-      row
-      |> String.split("", trim: true)
-      |> Enum.with_index()
-      |> Enum.into(acc, fn {char, col_idx} ->
-        {{col_idx, row_idx}, char}
-      end)
-    end)
   end
 end
