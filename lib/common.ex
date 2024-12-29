@@ -207,4 +207,13 @@ defmodule Common do
       end)
     end)
   end
+
+  def swap_map(map, a, b) when is_map_key(map, a) and is_map_key(map, b) do
+    a_val = Map.get(map, a)
+    b_val = Map.get(map, b)
+
+    map
+    |> Map.put(a, b_val)
+    |> Map.put(b, a_val)
+  end
 end

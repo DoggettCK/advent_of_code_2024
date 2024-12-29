@@ -39,112 +39,174 @@ defmodule Day24 do
   end
 
   def part2(args) do
-    operations = parse_operations(args)
-
-    operations_map =
-      operations
+    operations =
+      args
+      |> parse_operations()
       |> Enum.into(%{}, &{&1.dest, Map.drop(&1, [:dest])})
 
-    ones =
-      operations
-      |> Enum.filter(&xy_operation?/1)
-      |> Enum.reduce(%{}, fn operation, acc ->
-        %{left: left, right: right, op: op, dest: dest} = operation
-
-        l = get_id(left)
-        r = get_id(right)
-
-        case {l, r, op} do
-          {^l, ^l, "XOR"} ->
-            Map.put(acc, l, dest)
-
-          {^l, ^l, "AND"} ->
-            acc
-        end
-      end)
-
-    # Figured out rjm <-> wsv manually
-    swaps =
-      simulate([["rjm", "wsv"]], fn
-        45, new_swaps ->
-          return(new_swaps)
-
-        i, new_swaps ->
-          target = "z#{i |> to_string() |> String.pad_leading(2, "0")}"
-          one_dest = Map.get(ones, i)
-
-          target_op = Map.get(operations_map, target)
-
-          if "XOR" == target_op.op do
-            continue(new_swaps)
-          else
-            {replacement, _} =
-              operations_map
-              |> Enum.find(fn
-                {_dest, %{left: ^one_dest, op: "XOR"}} -> true
-                {_dest, %{right: ^one_dest, op: "XOR"}} -> true
-                _ -> false
-              end)
-
-            continue([[target, replacement] | new_swaps])
-          end
-      end)
-
-    operations_map =
-      swaps
-      |> Enum.reduce(operations_map, fn [a, b], acc ->
-        a_val = Map.get(acc, a)
-        b_val = Map.get(acc, b)
-
-        acc
-        |> Map.put(a, b_val)
-        |> Map.put(b, a_val)
-      end)
-
-    swaps
+    {operations, []}
     |> simulate(fn
-      1, new_swaps ->
-        continue(new_swaps)
+      4, {_, swaps} ->
+        return(swaps)
 
-      45, new_swaps ->
-        return(new_swaps)
+      _i, {ops, swaps} ->
+        baseline = progress(ops)
 
-      i, new_swaps ->
-        target = "z#{i |> to_string() |> String.pad_leading(2, "0")}"
+        xs = ys = Map.keys(ops)
 
-        %{op: op, left: l, right: r} = Map.get(operations_map, target)
+        case check_progress(xs, ys, baseline, ops) do
+          nil ->
+            return(swaps)
 
-        if "XOR" == op do
-          continue(new_swaps)
-        else
-          left_op = Map.get(operations_map, l)
-          right_op = Map.get(operations_map, r)
-
-          case {left_op, right_op} do
-            {%{op: "OR"}, %{op: "XOR"}} ->
-              continue(new_swaps)
-
-            {%{op: "XOR"}, %{op: "OR"}} ->
-              continue(new_swaps)
-
-            {%{op: "OR"}, _} ->
-              continue([[r, Map.get(ones, i)] | new_swaps])
-
-            _ ->
-              continue([[l, Map.get(ones, i)] | new_swaps])
-          end
+          {swapped_ops, x, y} ->
+            continue({swapped_ops, [x, y | swaps]})
         end
     end)
-    |> List.flatten()
     |> Enum.sort()
     |> Enum.join(",")
-
-    # return swaps.flat().sort().join(',');
   end
 
-  defp xy_operation?(%{left: "x" <> _, right: "y" <> _}), do: true
-  defp xy_operation?(%{left: "y" <> _, right: "x" <> _}), do: true
-  defp xy_operation?(_), do: false
+  defp check_progress([_x | xs], [], baseline, operations) do
+    check_progress(xs, Map.keys(operations), baseline, operations)
+  end
+
+  defp check_progress([x | xs], [x | ys], baseline, operations) do
+    check_progress([x | xs], ys, baseline, operations)
+  end
+
+  defp check_progress([], [], _baseline, _operations), do: nil
+
+  defp check_progress([x | xs], [y | ys], baseline, operations) do
+    swapped_ops = swap_map(operations, x, y)
+
+    if progress(swapped_ops) > baseline do
+      {swapped_ops, x, y}
+    else
+      check_progress([x | xs], ys, baseline, operations)
+    end
+  end
+
+  defp make_wire(char, num), do: "#{char}#{num |> to_string() |> String.pad_leading(2, "0")}"
+
+  defp verify_z(wire, _num, operations) when not is_map_key(operations, wire), do: false
+
+  defp verify_z(wire, num, operations) do
+    %{op: op, left: left, right: right} = Map.get(operations, wire)
+
+    case {op, num} do
+      {"XOR", 0} ->
+        [left, right]
+        |> Enum.sort()
+        |> Kernel.==(["x00", "y00"])
+
+      {"XOR", _} ->
+        (verify_intermediate_xor(left, num, operations) and
+           verify_carry_bit(right, num, operations)) or
+          (verify_intermediate_xor(right, num, operations) and
+             verify_carry_bit(left, num, operations))
+
+      _ ->
+        false
+    end
+  end
+
+  defp verify_intermediate_xor(wire, _num, operations) when not is_map_key(operations, wire),
+    do: false
+
+  defp verify_intermediate_xor(wire, num, operations) do
+    %{op: op, left: left, right: right} = Map.get(operations, wire)
+
+    case op do
+      "XOR" ->
+        [left, right]
+        |> Enum.sort()
+        |> Kernel.==([
+          make_wire("x", num),
+          make_wire("y", num)
+        ])
+
+      _ ->
+        false
+    end
+  end
+
+  defp verify_carry_bit(wire, _num, operations) when not is_map_key(operations, wire), do: false
+
+  defp verify_carry_bit(wire, num, operations) do
+    %{op: op, left: left, right: right} = Map.get(operations, wire)
+
+    case {op, num} do
+      {"AND", 1} ->
+        [left, right]
+        |> Enum.sort()
+        |> Kernel.==(["x00", "y00"])
+
+      {_, 1} ->
+        false
+
+      {"OR", _} ->
+        (verify_direct_carry(left, num - 1, operations) and
+           verify_recarry(right, num - 1, operations)) or
+          (verify_direct_carry(right, num - 1, operations) and
+             verify_recarry(left, num - 1, operations))
+
+      _ ->
+        false
+    end
+  end
+
+  defp verify_direct_carry(wire, _num, operations) when not is_map_key(operations, wire),
+    do: false
+
+  defp verify_direct_carry(wire, num, operations) do
+    %{op: op, left: left, right: right} = Map.get(operations, wire)
+
+    case op do
+      "AND" ->
+        [left, right]
+        |> Enum.sort()
+        |> Kernel.==([
+          make_wire("x", num),
+          make_wire("y", num)
+        ])
+
+      _ ->
+        false
+    end
+  end
+
+  defp verify_recarry(wire, _num, operations) when not is_map_key(operations, wire), do: false
+
+  defp verify_recarry(wire, num, operations) do
+    %{op: op, left: left, right: right} = Map.get(operations, wire)
+
+    case op do
+      "AND" ->
+        (verify_intermediate_xor(left, num, operations) and
+           verify_carry_bit(right, num, operations)) or
+          (verify_intermediate_xor(right, num, operations) and
+             verify_carry_bit(left, num, operations))
+
+      _ ->
+        false
+    end
+  end
+
+  defp verify(num, operations) do
+    "z"
+    |> make_wire(num)
+    |> verify_z(num, operations)
+  end
+
+  defp progress(operations) do
+    simulate(nil, fn i, nil ->
+      if verify(i, operations) do
+        continue(nil)
+      else
+        return(i)
+      end
+    end)
+  end
 
   defp parse_wires(args) do
     args
@@ -177,10 +239,4 @@ defmodule Day24 do
   defp run_instruction("AND", left, right), do: left &&& right
   defp run_instruction("XOR", left, right), do: bxor(left, right)
   defp run_instruction("OR", left, right), do: left ||| right
-
-  defp get_id(name) do
-    ~r/^[xy]/
-    |> Regex.replace(name, "")
-    |> String.to_integer()
-  end
 end
