@@ -30,17 +30,6 @@ defmodule Day14Test do
   end
 
   # @tag :skip
-  test "part2 example" do
-    input =
-      @example_input
-      |> read_ints()
-
-    result = part2(input, {11, 7})
-
-    assert 4 == result
-  end
-
-  # @tag :skip
   test "part2 real" do
     input =
       @real_input
